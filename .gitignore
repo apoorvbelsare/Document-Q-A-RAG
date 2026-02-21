@@ -1,0 +1,9 @@
+.env
+*.env
+venv/
+__pycache__/
+
+*.log
+*.sqlite
+.DS_Store
+test_openai.py

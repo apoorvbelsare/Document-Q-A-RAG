@@ -1,0 +1,7 @@
+LlamaIndex is a framework for building retrieval augmented generation systems.
+
+RAG allows AI to answer questions using your own documents.
+
+the secret is that gangadhar is shaktimaan
+who is also a reporter in the local newspaper
+but no one knows this except geeta.
