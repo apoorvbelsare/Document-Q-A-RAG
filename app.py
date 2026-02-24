@@ -2,6 +2,7 @@ from llama_index.core import VectorStoreIndex, SimpleDirectoryReader, Settings
 from llama_index.embeddings.huggingface import HuggingFaceEmbedding
 from llama_index.llms.ollama import Ollama
 from llama_index.core.node_parser import SentenceSplitter
+from llama_index.core.postprocessor import SentenceTransformerRerank
 
 # -----------------------------
 # Configure local models
@@ -43,15 +44,24 @@ index = VectorStoreIndex(nodes)
 # Query engine
 # -----------------------------
 
+# reranker improves result ordering
+reranker = SentenceTransformerRerank(
+    model="cross-encoder/ms-marco-MiniLM-L-6-v2",
+    top_n=2   # keep best 2 chunks
+)
+
 query_engine = index.as_query_engine(
-    similarity_top_k=3
+    similarity_top_k=6,   # retrieve more candidates
+    node_postprocessors=[reranker]
 )
 
 # -----------------------------
 # Ask question
 # -----------------------------
 
-response = query_engine.query("What is RAG?")
+response = query_engine.query("What problem does RAG solve?" +
+ "How does vector search work?"+
+"Explain RAG like I'm a beginner")
 
 print("\nAnswer:")
 print(response)
