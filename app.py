@@ -26,7 +26,7 @@ Settings.llm = Ollama(
 
 documents = SimpleDirectoryReader(
     "documents",
-    required_exts=[".txt", ".pdf", ".docx"]
+    required_exts=[".txt", ".pdf", ".docx", ".epub"]
 ).load_data()
 # -----------------------------
 # Better chunking
@@ -84,7 +84,7 @@ query_engine = RetrieverQueryEngine.from_args(
 # Ask question
 # -----------------------------
 
-response = query_engine.query("who is the headmaster?")
+response = query_engine.query("tell me about Kant from the perspective of schopenhauer?")
 
 print("\nAnswer:")
 print(response)
