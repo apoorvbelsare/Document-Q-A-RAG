@@ -6,6 +6,12 @@ from llama_index.core.postprocessor import SentenceTransformerRerank
 from llama_index.core.retrievers import VectorIndexRetriever, QueryFusionRetriever
 from llama_index.core.query_engine import RetrieverQueryEngine
 from llama_index.retrievers.bm25 import BM25Retriever
+from llama_index.core.memory import ChatMemoryBuffer
+from llama_index.core.chat_engine import ContextChatEngine
+from llama_index.core import SimpleDirectoryReader
+from llama_index.readers.file import DocxReader, PyMuPDFReader, EpubReader
+
+import streamlit as st
 # -----------------------------
 # Configure local models
 # -----------------------------
@@ -24,9 +30,15 @@ Settings.llm = Ollama(
 # -----------------------------
 
 
+file_extractor = {
+    ".pdf": PyMuPDFReader(),   # ⭐ better extraction
+    ".docx": DocxReader(),
+    ".epub": EpubReader(),
+}
+
 documents = SimpleDirectoryReader(
     "documents",
-    required_exts=[".txt", ".pdf", ".docx", ".epub"]
+    file_extractor=file_extractor
 ).load_data()
 # -----------------------------
 # Better chunking
@@ -76,20 +88,27 @@ reranker = SentenceTransformerRerank(
     top_n=2
 )
 
-query_engine = RetrieverQueryEngine.from_args(
-    fusion_retriever,
-    node_postprocessors=[reranker]
+# create chat memory
+memory = ChatMemoryBuffer.from_defaults(
+    token_limit=3000
+)
+
+# create chat engine (replaces query_engine)
+chat_engine = ContextChatEngine.from_defaults(
+    retriever=fusion_retriever,
+    memory=memory,
+    node_postprocessors=[reranker],
 )
 # -----------------------------
 # Ask question
 # -----------------------------
 
-response = query_engine.query("tell me about Kant from the perspective of schopenhauer?")
+response = query_engine.query("what is the second chapter about?")
 
 print("\nAnswer:")
 print(response)
 print("\nRetrieved Chunks:\n")
 
-for node in response.source_nodes:
-    print("----")
-    print(node.text)
+#for node in response.source_nodes:
+ #   print("----")
+  #  print(node.text)

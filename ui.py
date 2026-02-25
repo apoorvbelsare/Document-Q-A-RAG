@@ -12,7 +12,7 @@ if "engine" not in st.session_state:
 # Upload documents
 uploaded_files = st.file_uploader(
     "Upload PDFs or DOCX",
-    type=["pdf", "docx" , "txt", "epub"],
+    type=["pdf", "docx", "epub"],
     accept_multiple_files=True
 )
 
