@@ -33,7 +33,7 @@ Settings.llm = Ollama(
 file_extractor = {
     ".pdf": PyMuPDFReader(),   # ⭐ better extraction
     ".docx": DocxReader(),
-    ".epub": EpubReader(),
+    ".epub": EpubReader()
 }
 
 documents = SimpleDirectoryReader(
@@ -103,7 +103,7 @@ chat_engine = ContextChatEngine.from_defaults(
 # Ask question
 # -----------------------------
 
-response = query_engine.query("what is the second chapter about?")
+response = chat_engine.query("what is the second chapter about?")
 
 print("\nAnswer:")
 print(response)

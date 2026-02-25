@@ -2,6 +2,9 @@ from llama_index.core import VectorStoreIndex, SimpleDirectoryReader
 from llama_index.core.node_parser import SentenceSplitter
 from llama_index.embeddings.huggingface import HuggingFaceEmbedding
 from llama_index.llms.ollama import Ollama
+from llama_index.core.memory import ChatMemoryBuffer
+from llama_index.core.chat_engine import ContextChatEngine
+
 
 from llama_index.readers.file import (
     PyMuPDFReader,
@@ -67,10 +70,10 @@ def load_documents(uploaded_files):
 # Query Engine Builder
 # ---------------------------
 
-def build_query_engine(documents):
+def build_chat_engine(documents):
     splitter = SentenceSplitter(
         chunk_size=512,
-        chunk_overlap=80   # improved context retention
+        chunk_overlap=80
     )
 
     nodes = splitter.get_nodes_from_documents(documents)
@@ -80,9 +83,15 @@ def build_query_engine(documents):
         embed_model=embed_model
     )
 
-    query_engine = index.as_query_engine(
-        llm=llm,
-        similarity_top_k=5
+    # memory buffer (stores conversation)
+    memory = ChatMemoryBuffer.from_defaults(
+        token_limit=3000
     )
 
-    return query_engine
+    chat_engine = ContextChatEngine.from_defaults(
+        retriever=index.as_retriever(similarity_top_k=5),
+        memory=memory,
+        llm=llm
+    )
+
+    return chat_engine
