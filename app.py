@@ -25,6 +25,8 @@ Settings.llm = Ollama(
     request_timeout=120.0
 )
 
+os.environ["OPENAI_API_KEY"] = "YOUR_GROQ_API_KEY"
+os.environ["OPENAI_API_BASE"] = "https://api.groq.com/openai/v1"
 # -----------------------------
 # Load documents
 # -----------------------------
