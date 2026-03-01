@@ -5,6 +5,12 @@ st.set_page_config(page_title="RAG Assistant", layout="wide")
 
 st.title("📚 Local RAG Assistant")
 
+st.divider()
+
+st.caption(
+    "Built with LlamaIndex | Hybrid Retrieval | Local LLM (Llama3 via Ollama)- by Apoorv Belsare"
+)
+
 # -------------------------
 # Session storage
 # -------------------------
