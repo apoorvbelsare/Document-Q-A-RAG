@@ -4,7 +4,11 @@ from llama_index.embeddings.huggingface import HuggingFaceEmbedding
 from llama_index.llms.ollama import Ollama
 from llama_index.core.memory import ChatMemoryBuffer
 from llama_index.core.chat_engine import ContextChatEngine
-
+from llama_index.core.memory import ChatMemoryBuffer
+from llama_index.core.chat_engine import ContextChatEngine
+from llama_index.core.retrievers import VectorIndexRetriever, QueryFusionRetriever
+from llama_index.retrievers.bm25 import BM25Retriever
+from llama_index.core.postprocessor import SentenceTransformerRerank
 
 from llama_index.readers.file import (
     PyMuPDFReader,
@@ -27,6 +31,10 @@ llm = Ollama(
     model="llama3",
     request_timeout=120.0
 )
+from llama_index.core import Settings
+
+Settings.llm = llm
+Settings.embed_model = embed_model
 
 # ---------------------------
 # Document Loader
@@ -83,14 +91,41 @@ def build_chat_engine(documents):
         embed_model=embed_model
     )
 
-    # memory buffer (stores conversation)
+    # Vector retriever
+    vector_retriever = VectorIndexRetriever(
+        index=index,
+        similarity_top_k=6,
+    )
+
+    # Keyword retriever
+    bm25_retriever = BM25Retriever.from_defaults(
+        nodes=nodes,
+        similarity_top_k=6,
+    )
+
+    # Hybrid retriever
+    fusion_retriever = QueryFusionRetriever(
+        [vector_retriever, bm25_retriever],
+        similarity_top_k=6,
+    )
+
+    # Reranker (huge quality boost)
+    reranker = SentenceTransformerRerank(
+        model="cross-encoder/ms-marco-MiniLM-L-6-v2",
+        top_n=3
+    )
+
+    from llama_index.core.memory import ChatMemoryBuffer
+    from llama_index.core.chat_engine import ContextChatEngine
+
     memory = ChatMemoryBuffer.from_defaults(
         token_limit=3000
     )
 
     chat_engine = ContextChatEngine.from_defaults(
-        retriever=index.as_retriever(similarity_top_k=5),
+        retriever=fusion_retriever,
         memory=memory,
+        node_postprocessors=[reranker],
         llm=llm
     )
 
