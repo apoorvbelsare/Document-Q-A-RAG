@@ -8,7 +8,7 @@ st.title("📚 Local RAG Assistant")
 st.divider()
 
 st.caption(
-    "Built with LlamaIndex | Hybrid Retrieval | Local LLM (Llama3 via Ollama)- by Apoorv Belsare"
+    "Built with LlamaIndex | Hybrid Retrieval | Local LLM (Llama3 via Ollama) | Groq API for cloud LLM | - by Apoorv Belsare"
 )
 
 # -------------------------
