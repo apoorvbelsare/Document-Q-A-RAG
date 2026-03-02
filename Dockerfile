@@ -17,4 +17,4 @@ EXPOSE 8501
 
 # Run Streamlit
 # Run Streamlit
-CMD ["python", "-m", "streamlit", "run", "ui.py", "--server.port=8501", "--server.address=0.0.0.0"
+CMD ["sh", "-c", "python -m streamlit run ui.py --server.port=$PORT --server.address=0.0.0.0"]
