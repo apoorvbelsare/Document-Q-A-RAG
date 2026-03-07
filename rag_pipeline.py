@@ -168,12 +168,13 @@ def build_chat_engine(documents):
         raise ValueError("No documents provided.")
 
     splitter = SentenceSplitter(
-        chunk_size=512,
-        chunk_overlap=80,
+        chunk_size=256,
+        chunk_overlap=20,
     )
 
-    nodes = splitter.get_nodes_from_documents(documents)
-
+    nodes = splitter.get_nodes_from_documents(documents, include_metadata=False)
+    #limit node count 
+    nodes = nodes[:200]
     index = VectorStoreIndex(
         nodes,
         embed_model=embed_model,

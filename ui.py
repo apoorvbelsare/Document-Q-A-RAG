@@ -10,7 +10,15 @@ st.divider()
 st.caption(
     "Built with LlamaIndex | Hybrid Retrieval | Local LLM (Llama3 via Ollama) | Groq API for cloud LLM | - by Apoorv Belsare"
 )
+#load only once, using streamlit cache
+#this prevents mulitple memory allocations
+@st.cache_resource
+def init_engine():
+    
+    docs = load_documents()
+    return build_chat_engine(docs)
 
+chat_engine = init_engine()
 # -------------------------
 # Session storage
 # -------------------------
