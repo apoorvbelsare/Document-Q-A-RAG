@@ -10,15 +10,7 @@ st.divider()
 st.caption(
     "Built with LlamaIndex | Hybrid Retrieval | Local LLM (Llama3 via Ollama) | Groq API for cloud LLM | - by Apoorv Belsare"
 )
-#load only once, using streamlit cache
-#this prevents mulitple memory allocations
-@st.cache_resource
-def init_engine():
-    
-    docs = load_documents()
-    return build_chat_engine(docs)
 
-chat_engine = init_engine()
 # -------------------------
 # Session storage
 # -------------------------
@@ -27,6 +19,12 @@ if "chat_engine" not in st.session_state:
 
 if "chat_history" not in st.session_state:
     st.session_state.chat_history = []
+# Engine builder
+# -------------------------
+@st.cache_resource
+def init_engine(uploaded_files):
+    docs = load_documents(uploaded_files)
+    return build_chat_engine(docs)
 
 # -------------------------
 # Upload documents
@@ -39,13 +37,16 @@ uploaded_files = st.file_uploader(
 
 if uploaded_files and st.button("Process Documents"):
     with st.spinner("Processing..."):
-        docs = load_documents(uploaded_files)
+       
 
         # BUILD CHAT ENGINE (with memory)
-        st.session_state.chat_engine = build_chat_engine(docs)
+              
+        st.session_state.chat_engine = init_engine(uploaded_files)  
+              
+
 
     st.success("Documents indexed!")
-
+chat_engine =  st.session_state.chat_engine
 # -------------------------
 # Ask questions
 # -------------------------
