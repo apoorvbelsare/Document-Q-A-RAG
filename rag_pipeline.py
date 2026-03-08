@@ -4,9 +4,10 @@ from llama_index.core import (
     Settings,
 )
 from llama_index.core.node_parser import SentenceSplitter
-from llama_index.embeddings.openai import OpenAIEmbedding
+#from llama_index.embeddings.openai import OpenAIEmbedding
 from llama_index.core.memory import ChatMemoryBuffer
 from llama_index.core.chat_engine import ContextChatEngine
+from llama_index.embeddings.huggingface import HuggingFaceEmbedding
 from llama_index.core.retrievers import VectorIndexRetriever, QueryFusionRetriever
 from llama_index.retrievers.bm25 import BM25Retriever
 from llama_index.core.postprocessor import SentenceTransformerRerank
@@ -120,8 +121,8 @@ class GroqLLM(CustomLLM):
 # Models
 # ============================
 
-embed_model = OpenAIEmbedding(
-    model="text-embedding-3-small"
+embed_model = HuggingFaceEmbedding(
+    model_name="sentence-transformers/all-MiniLM-L6-v2"
 )
 
 llm = GroqLLM()
@@ -174,7 +175,7 @@ def build_chat_engine(documents):
 
     nodes = splitter.get_nodes_from_documents(documents, include_metadata=False)
     #limit node count 
-    nodes = nodes[:200]
+    nodes = nodes[:100]
     index = VectorStoreIndex(
         nodes,
         embed_model=embed_model,
